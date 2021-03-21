@@ -26,6 +26,16 @@ def create_random_filename(ext):
 	return ''.join(random.sample(pool, 6)) + ext
 
 
+def execute(cmd,show):
+	f = create_random_filename('.txt')
+	os.system('%s >> %s;' % (cmd, f))
+	result = read(f,True)
+	if show:
+		for ln in result:
+			print(ln)
+	return result
+
+
 def create_timestamp():
     date = time.localtime(time.time())
     mo = str(date.tm_mon)
@@ -39,3 +49,10 @@ def create_timestamp():
     date = mo + '/' + day + '/' + yr
     timestamp = hr + ':' + min + ':' + sec
     return date, timestamp
+
+def merge_logs(fileA, fileB):
+	data1 = json.loads(open(fileA,'r').read())
+	data2 = json.loads(open(fileB,'r').read())
+	data3 = data1
+	for k in data2.keys():	data3[k] = data2[k]
+	return data3

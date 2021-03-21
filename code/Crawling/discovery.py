@@ -31,12 +31,33 @@ def run_scan(n_threads, file_in):
 	hosts = utils.read(file_in, False)
 	random.shuffle(hosts)
 	lt,ld = utils.create_timestamp()
-	print('='*40)
+	print('='*42)
 	print('|| STARTED Digging %s - %s ||' % (ld,lt))
-	print('='*40)
-	open('scan_result2.json','w').write('')
+	print('='*42)
+	open('scan_result.json','w').write('')
 	domains_found = {}; completed = 0
-	try:
+
+	# Because likely starting and stopping, want to do
+	# some housekeeping to keep track of which digs 
+	# already made, and consolidating previouos digs
+	if len(utils.execute('ls *.json')) > 1 and os.path.isfile('scan_result.json'):
+		print('[-] Combining Old Scans')
+		domains_found = json.loads(open('scan_result.json','r').read())
+		n_found = len(domains_found.keys())
+		for log in utils.execute('ls *.json'):
+			if log != 'scan_result.json':
+				domains_found = utils.merge_logs('scan_result.json', log)
+				open('scan_result.json', 'w').write(json.dumps(domains_found))	
+				print('[-] %d total domains dug ' % len(domains_found.keys()))
+	print('[-] Removing Addresses with dig results already saved...')
+	n_cleaned = 0
+	# Remove duplicates from hosts already in domains found before_hand 
+	for adr in domains_found.keys():
+		if adr in hosts:
+			hosts.remove(adr)
+			n_cleaned += 1
+	print('[-] %d entries removed from host list' % n_cleaned)
+	try:		
 		for address in tqdm(hosts):
 			completed += 1
 			try:
@@ -44,7 +65,7 @@ def run_scan(n_threads, file_in):
 				fname = query.get(timeout=3)
 				domains_found[address] = parse_dig(fname)
 				if completed % 100:
-					open('scan_result2.json','w').write(json.dumps(domains_found))
+					open('scan_result.json','w').write(json.dumps(domains_found))
 			except multiprocessing.TimeoutError:
 				os.system('rm *.txt')
 				pass
