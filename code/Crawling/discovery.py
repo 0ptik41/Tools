@@ -46,11 +46,11 @@ def run_scan(n_threads, file_in):
 				if completed % 100:
 					open('scan_result2.json','w').write(json.dumps(domains_found))
 			except multiprocessing.TimeoutError:
-				os.system('rm %s >> /dev/null' % fname)
+				os.system('rm %s >> /dev/null >2&1' % fname)
 				pass
 	except KeyboardInterrupt:
 		print('[X] Stopping the Digging...')
-		os.system('rm %s >> /dev/null' % fname)
+		os.system('rm %s >> /dev/null >2&1' % fname)
 		pass
 
 
