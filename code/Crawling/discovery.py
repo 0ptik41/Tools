@@ -13,8 +13,6 @@ def query_thread(ip):
 	os.system(c)
 	return fout
 
-def usage():
-	print('Usage: %s ip_list.txt' % sys.argv[0])
 
 def parse_dig(fin):
 	found = []
@@ -34,7 +32,6 @@ def run_scan(n_threads, file_in):
 	print('='*42)
 	print('|| STARTED Digging %s - %s ||' % (ld,lt))
 	print('='*42)
-	
 	domains_found = {}; completed = 0
 
 	# Because likely starting and stopping, want to do
@@ -49,23 +46,25 @@ def run_scan(n_threads, file_in):
 				domains_found = utils.merge_logs('scan_result.json', log)
 				open('scan_result.json', 'w').write(json.dumps(domains_found))	
 				print('[-] %d total domains dug ' % len(domains_found.keys()))
-	print('[-] Removing Addresses with dig results already saved...')
+	print('[-] Removing Addresses with dig results already saved')
+	print('[-] This May Take a while...')
 	n_cleaned = 0
 	open('scan_result.json','w').write('')
 	# Remove duplicates from hosts already in domains found before_hand 
-	for adr in domains_found.keys():
-		if adr in hosts:
+	for adr in tqdm(hosts):
+		if adr in domains_found.keys():
 			hosts.remove(adr)
 			n_cleaned += 1
 	print('[-] %d entries removed from host list' % n_cleaned)
 	try:		
+		n = len(hosts)
 		for address in tqdm(hosts):
 			completed += 1
 			try:
 				query = pool.apply_async(query_thread, (address,))
 				fname = query.get(timeout=3)
 				domains_found[address] = parse_dig(fname)
-				if completed % 100:
+				if (completed) % 100 == 0:
 					open('scan_result.json','w').write(json.dumps(domains_found))
 			except multiprocessing.TimeoutError:
 				os.system('rm *.txt')
@@ -84,9 +83,8 @@ def main():
 		# run the scan
 		run_scan(N, input_file)
 	else:
-		usage()
+		print('Usage: %s ip_list.txt' % sys.argv[0]); exit()
 	print('[*] FINISHED [%ss Elapsed]' % str(time.time() - start))
-	print('===============================')
 
 if __name__ == '__main__':
 	main()

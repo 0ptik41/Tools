@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ $# -lt 1 ]
+	echo 'Usage: ./getdata host@ip'
+	exit
+else
+	rmt=$1
+fi
+
+echo '[*] Combining all Digging efforts...'
+sz=$(./sizeof ../Crawling/scan_result.json)
+if [ $sz -eq 0];
+then
+	sleep 1
+fi
+cp ../Crawling/scan_result.json $PWD
+echo '[*] Local file copied over'
+mv scan_result.json backup_scan_result.json
+echo '[*] Loading Remote Data'
+python data_loader.py add $rmt:/home/pi/Tools/code/Crawling/scan_result.json
+echo '[*] Combining Data'
+python data_loader.py combine scan_result.json backup_scan_result.json
+#EOF
