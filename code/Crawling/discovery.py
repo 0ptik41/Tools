@@ -34,23 +34,24 @@ def run_scan(n_threads, file_in):
 	print('='*42)
 	print('|| STARTED Digging %s - %s ||' % (ld,lt))
 	print('='*42)
-	open('scan_result.json','w').write('')
+	
 	domains_found = {}; completed = 0
 
 	# Because likely starting and stopping, want to do
 	# some housekeeping to keep track of which digs 
 	# already made, and consolidating previouos digs
-	if len(utils.execute('ls *.json')) > 1 and os.path.isfile('scan_result.json'):
+	if len(utils.execute('ls *.json',False)) > 1 and os.path.isfile('scan_result.json'):
 		print('[-] Combining Old Scans')
 		domains_found = json.loads(open('scan_result.json','r').read())
 		n_found = len(domains_found.keys())
-		for log in utils.execute('ls *.json'):
+		for log in utils.execute('ls *.json',False):
 			if log != 'scan_result.json':
 				domains_found = utils.merge_logs('scan_result.json', log)
 				open('scan_result.json', 'w').write(json.dumps(domains_found))	
 				print('[-] %d total domains dug ' % len(domains_found.keys()))
 	print('[-] Removing Addresses with dig results already saved...')
 	n_cleaned = 0
+	open('scan_result.json','w').write('')
 	# Remove duplicates from hosts already in domains found before_hand 
 	for adr in domains_found.keys():
 		if adr in hosts:
