@@ -30,22 +30,27 @@ def run_scan(n_threads, file_in):
 	pool = multiprocessing.Pool(n_threads)
 	hosts = utils.read(file_in, False)
 	random.shuffle(hosts)
-	print('[*] Digging...')
-	open('scan_result.json','w').write('')
+	lt,ld = utils.create_timestamp()
+	print('='*40)
+	print('|| STARTED Digging %s - %s ||' % (ld,lt))
+	print('='*40)
+	open('scan_result2.json','w').write('')
 	domains_found = {}; completed = 0
 	try:
 		for address in tqdm(hosts):
 			completed += 1
 			try:
 				query = pool.apply_async(query_thread, (address,))
-				fname = query.get(timeout=2)
+				fname = query.get(timeout=3)
 				domains_found[address] = parse_dig(fname)
 				if completed % 100:
-					open('scan_result.json','w').write(json.dumps(domains_found))
+					open('scan_result2.json','w').write(json.dumps(domains_found))
 			except multiprocessing.TimeoutError:
+				os.system('rm %s >> /dev/null' % fname)
 				pass
 	except KeyboardInterrupt:
 		print('[X] Stopping the Digging...')
+		os.system('rm %s >> /dev/null' % fname)
 		pass
 
 
@@ -60,6 +65,7 @@ def main():
 	else:
 		usage()
 	print('[*] FINISHED [%ss Elapsed]' % str(time.time() - start))
+	print('===============================')
 
 if __name__ == '__main__':
 	main()
