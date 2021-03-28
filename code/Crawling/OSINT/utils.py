@@ -56,3 +56,4 @@ def merge_logs(fileA, fileB):
 	data3 = data1
 	for k in data2.keys():	data3[k] = data2[k]
 	return data3
+
