@@ -41,6 +41,9 @@ def ppm2arr(fpath):
 	nums = rawdata.replace('\n','')[15:].split(' ')[:-1]
 	return  np.array(nums).astype(np.uint8).reshape((w,h,3))
 
-if len(sys.argv) > 1:
-	img2ppm(sys.argv[1])
+def main():
+	if len(sys.argv) > 1:
+		img2ppm(sys.argv[1])
 
+if __name__ == '__main__':
+	main()

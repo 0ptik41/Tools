@@ -1,9 +1,12 @@
-import os, sys, string, random, base64
+import os, string, random, base64
 
 alphas = list(string.lowercase + string.uppercase)
 
 def create_random_file(ext):
 	return ''.join(random.sample(alphas,8))+ext
+
+def xor(data, n):
+	return base64.b64encode(''.join([chr(ord(l)^n) for l in list(data)]))
 
 def shellc(cmd, verbose):
 	rf = create_random_file('.txt')
@@ -16,8 +19,6 @@ def shellc(cmd, verbose):
 		print(result)
 	return result
 
-def xor(data, n):
-	return ''.join([chr(ord(l)^n) for l in list(data)])
 
 
 if __name__ == '__main__':
