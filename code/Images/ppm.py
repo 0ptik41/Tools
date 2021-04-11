@@ -32,8 +32,15 @@ def img2ppm(fpath):
 	new_name = fpath.split('/')[-1].split('.')[0]+'.ppm'
 	open(new_name,'w').write(magic+data)
 
+def ppm2arr(fpath):
+	rawdata = open(fpath,'r').read()
+	fields = rawdata[3:14].split(' ')
+	w = int(fields[0])
+	h = int(fields[1])
+	dr = int(fields[2])
+	nums = rawdata.replace('\n','')[15:].split(' ')[:-1]
+	return  np.array(nums).astype(np.uint8).reshape((w,h,3))
 
-
-if '-to' in sys.argv and len(sys.argv) > 2:
-	img2ppm(sys.argv[2])
+if len(sys.argv) > 1:
+	img2ppm(sys.argv[1])
 
