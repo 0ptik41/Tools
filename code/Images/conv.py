@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import os, sys, ppm
 import numpy as np
+import string
 
 
 def color2bw(imarr):
@@ -14,6 +15,24 @@ def color2bw(imarr):
 			b = imarr[x,y,2]
 			imout[x,y] = ((r & g & b))
 	return imout
+
+def ascii_art(fname):
+	ascii = list(string.printable.replace('\n'))
+	ascii.remove('\n')
+	ascii.remove('\r')
+	ascii.remove('\t')
+	ext = fname[2].split('.')[1]
+	if ext == 'ppm':
+		arr = ppm.ppm2arr(fname)
+	else:
+		arr = np.array(plt.imread(fname))
+	bw = color2bw(arr)
+	vals = [ord(n) for n in ascii]
+	mapping = np.linspace(min(vals),max(vals),len(vals))
+	maps = {}
+	for i in range(len(mapping)): maps[i] = mapping[i]
+
+
 
 if '-c2k' in sys.argv and len(sys.argv)>1:
 	ext = sys.argv[2].split('.')[1]
