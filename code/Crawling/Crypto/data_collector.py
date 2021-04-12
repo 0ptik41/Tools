@@ -6,6 +6,7 @@ import utils
 import time
 import json
 import sys 
+import os
 
 btc_api = 'api.coindesk.com/v1/bpi/currentPrice/USD'
 ltc_api = 'api.blockchain.com/v3/exchange/tickers/LTC-USD'
@@ -30,7 +31,7 @@ def pull_market():
 	parameters = {'start':'1','limit':'5000','convert':'USD'}
 	headers = {
 	  'Accepts': 'application/json',
-	  'X-CMC_PRO_API_KEY': 'GET_AN_API_TOKEN_FROM_COINMARKETCAP',
+	  'X-CMC_PRO_API_KEY': 'GET_AN_API_KEY_FROM_COINMARKETCAP',
 	}
 
 	session = Session()
@@ -84,7 +85,14 @@ def collect_data():
 		pass
 
 def main():
+	if not os.path.isdir('Data'):
+		os.mkdir('Data')
+	if os.path.isfile('crypto_market.json'):
+		bkup = utils.create_random_filename('.json')
+		os.system('cp crypto_market.json Data/%s' % bkup)
+
 	collect_data()
 
 if __name__ == '__main__':
 	main()
+
