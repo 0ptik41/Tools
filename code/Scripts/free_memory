@@ -1,0 +1,9 @@
+#!/bin/bash
+echo '[-] Freeing up memory'
+swapMem=$(free --mega | grep Mem | cut -d ' ' -f 32)
+echo '[-] '$swapMem'MB of free swap memory'
+sync ; echo 1 > /proc/sys/vm/drop_caches; printf '.'
+sync ; echo 2 > /proc/sys/vm/drop_caches; printf '.'
+sync ; echo 3 > /proc/sys/vm/drop_caches; printf '.\n'
+echo '[-] '$swapMem'MB of free swap memory'
+#EOF

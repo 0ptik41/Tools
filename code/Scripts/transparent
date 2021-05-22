@@ -1,0 +1,11 @@
+#!/bin/bash
+echo '[+] select window to change opacity of with cross-hairs [+]'
+if [ $# -eq 1 ]; 
+then
+	xprop -format _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY $1
+fi
+if [ $# -lt 1 ]; 
+then 
+	xprop -format _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY 0xEFEFFFFF
+ fi
+#EOF
